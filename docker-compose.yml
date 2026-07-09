@@ -1,0 +1,65 @@
+version: '3.4'
+
+x-labels:
+  &default-labels
+  # constant (not $CI) so digests are reproducible across CI/local
+  org.supernetworks.ci: "true"
+  org.supernetworks.version: ${RELEASE_VERSION:-latest}${RELEASE_CHANNEL:-}
+
+services:
+  # Upstream gluetun VPN client (killswitch firewall + DoT + control server).
+  # Pinned by digest; refresh with ./update-pins.sh (GLUETUN_REF in reproducible.env).
+  gluetun:
+    container_name: spr-gluetun-vpn
+    image: qmcgaw/gluetun:v3.41.1@sha256:1a5bf4b4820a879cdf8d93d7ef0d2d963af56670c9ebff8981860b6804ebc8ab
+    depends_on:
+      - spr-gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    security_opt:
+      - no-new-privileges:true
+    sysctls:
+      # gateway mode: forward routed SPR device traffic into the tunnel
+      - net.ipv4.ip_forward=1
+    networks:
+      gluetunnet:
+        ipv4_address: 172.30.117.2
+    # written by the spr-gluetun backend from the validated JSON config;
+    # missing until first configuration (gluetun then exits until configured)
+    env_file:
+      - path: "${SUPERDIR}./configs/plugins/spr-gluetun/gluetun.env"
+        required: false
+    volumes:
+      # gluetun state (servers.json) + control-server auth config written by the backend
+      - "${SUPERDIR}./state/plugins/spr-gluetun/gluetun:/gluetun"
+
+  # SPR plugin backend + UI (unix socket only, no capabilities)
+  spr-gluetun:
+    container_name: spr-gluetun
+    image: ghcr.io/spr-networks/spr-gluetun:${RELEASE_VERSION:-latest}${RELEASE_CHANNEL:-}
+    build:
+      context: "${BUILDCTX:-.}"
+      labels: *default-labels
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      gluetunnet:
+        ipv4_address: 172.30.117.3
+    volumes:
+      - "${SUPERDIR}./state/plugins/spr-gluetun:/state/plugins/spr-gluetun"
+      - "${SUPERDIR}./state/public/:/state/public/:ro"
+      - "${SUPERDIR}./state/api/:/state/api/:ro"
+      - "${SUPERDIR}./configs/base/config.sh:/configs/base/config.sh:ro"
+      - "${SUPERDIR}./configs/plugins/spr-gluetun:/configs/spr-gluetun"
+
+# The bridge name must match plugin.json NetworkCapabilities.Interface and the
+# Interface used in install.sh's PUT /firewall/custom_interface.
+networks:
+  gluetunnet:
+    driver_opts:
+      com.docker.network.bridge.name: spr-gluetun
+    ipam:
+      config:
+        - subnet: 172.30.117.0/24
