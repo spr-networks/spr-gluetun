@@ -207,6 +207,9 @@ export default function Plugin() {
       <ListHeader
         title="Gluetun VPN Gateway"
         description="Route SPR devices in the vpn-egress group through an outbound VPN tunnel"
+        mark="gt"
+        status={running ? 'Tunnel active' : reachable ? 'Stopped' : 'Unreachable'}
+        statusAction={running ? 'success' : reachable ? 'warning' : 'error'}
       >
         <Button size="sm" isDisabled={busy} onPress={save}>
           <ButtonText>Save</ButtonText>
