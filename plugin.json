@@ -11,7 +11,7 @@
   "NetworkCapabilities": {
     "Interface": "spr-gluetun",
     "Policies": ["wan", "dns"],
-    "Groups": ["vpn-egress"]
+    "Groups": ["vpn-glutun"]
   },
   "Enabled": true
 }

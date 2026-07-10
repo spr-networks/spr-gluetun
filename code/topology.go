@@ -4,7 +4,7 @@ import "net/http"
 
 // GluetunContainerIP is the fixed address of the gluetun container on the
 // plugin's docker bridge (see the ipam config in docker-compose.yml). SPR
-// devices in the vpn-egress group are routed to this IP.
+// devices in the vpn-glutun group are routed to this IP.
 var GluetunContainerIP = "172.30.117.2"
 
 // TopoNode / TopoEdge / Topology mirror the shapes SPR expects from plugin

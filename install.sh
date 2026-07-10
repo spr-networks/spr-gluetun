@@ -45,15 +45,15 @@ docker compose build
 docker compose up -d
 
 # Register the gluetun container IP as a custom interface so SPR grants it
-# wan+dns egress and puts it in the vpn-egress group. Devices placed in the
-# vpn-egress group can then be routed via the gluetun container IP.
+# wan+dns egress and puts it in the vpn-glutun group. Devices placed in the
+# vpn-glutun group can then be routed via the gluetun container IP.
 GLUETUN_IP=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "spr-gluetun-vpn")
 API=127.0.0.1
 
 curl "http://${API}/firewall/custom_interface" \
 -H "Authorization: Bearer ${SPR_API_TOKEN}" \
 -X 'PUT' \
---data-raw "{\"SrcIP\":\"${GLUETUN_IP}\",\"Interface\":\"spr-gluetun\",\"Policies\":[\"wan\",\"dns\"],\"Groups\":[\"vpn-egress\"]}"
+--data-raw "{\"SrcIP\":\"${GLUETUN_IP}\",\"Interface\":\"spr-gluetun\",\"Policies\":[\"wan\",\"dns\"],\"Groups\":[\"vpn-glutun\"]}"
 
 echo ""
 echo "[+] spr-gluetun installed. Configure your VPN provider in the SPR UI"

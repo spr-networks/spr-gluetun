@@ -439,7 +439,7 @@ export default function Plugin() {
   const header = (
     <ListHeader
       title="Gluetun VPN gateway"
-      description="Route devices in the vpn-egress group through an outbound VPN tunnel"
+      description="Route devices in the vpn-glutun group through an outbound VPN tunnel"
       mark="gt"
       status={loading || loadError ? undefined : headerStatus}
       statusAction={headerAction}
@@ -491,7 +491,7 @@ export default function Plugin() {
   const exitLocation = [status?.City, status?.Country].filter(Boolean).join(', ')
   const stateWord = running ? 'Connected' : reachable ? 'Stopped' : 'Gateway unreachable'
   const stateHint = reachable
-    ? 'Devices in vpn-egress have no internet until the tunnel is started (killswitch).'
+    ? 'Devices in vpn-glutun have no internet until the tunnel is started (killswitch).'
     : 'Gluetun starts after a valid provider config is saved and the plugin is restarted.'
 
   const savedFilter =
@@ -612,7 +612,7 @@ export default function Plugin() {
                   {gatewayIP}
                 </MonoText>
                 <Text size="xs" color="$muted500" lineHeight="$sm">
-                  Point vpn-egress devices here. If the tunnel drops, traffic is
+                  Point vpn-glutun devices here. If the tunnel drops, traffic is
                   blocked by the killswitch — never leaked to the WAN.
                 </Text>
               </VStack>
@@ -870,7 +870,7 @@ export default function Plugin() {
           setTunnel(false)
         }}
         title="Stop VPN tunnel?"
-        message="Devices in the vpn-egress group immediately lose internet access until the tunnel is started again — the killswitch blocks their traffic rather than leaking it to the WAN."
+        message="Devices in the vpn-glutun group immediately lose internet access until the tunnel is started again — the killswitch blocks their traffic rather than leaking it to the WAN."
         confirmText="Stop tunnel"
         destructive
       />

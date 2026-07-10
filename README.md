@@ -7,7 +7,7 @@ built around [gluetun](https://github.com/qdm12/gluetun) — the swiss-army VPN 
 container with a built-in killswitch firewall and DNS-over-TLS.
 
 Configure a commercial VPN provider (Mullvad, Proton VPN, NordVPN, ...) or your own
-WireGuard/OpenVPN server, then route selected SPR devices — the `vpn-egress` group —
+WireGuard/OpenVPN server, then route selected SPR devices — the `vpn-glutun` group —
 through the tunnel. Devices outside the group keep using your normal WAN.
 
 This plugin was proposed on the SPR plugin wishlist
@@ -53,7 +53,7 @@ API key.
 2. Enter this repository's URL, e.g. `https://github.com/spr-networks/spr-gluetun`
 3. Enable the plugin, open its UI, configure a provider and save
 4. Restart (toggle) the plugin so the gluetun container picks up the new env file
-5. Put the devices you want tunneled into the `vpn-egress` group (Devices page)
+5. Put the devices you want tunneled into the `vpn-glutun` group (Devices page)
 
 ## Install (CLI)
 
@@ -67,19 +67,19 @@ gluetun container IP as an SPR custom interface:
 
 ```
 PUT /firewall/custom_interface
-{"SrcIP":"172.30.117.2","Interface":"spr-gluetun","Policies":["wan","dns"],"Groups":["vpn-egress"]}
+{"SrcIP":"172.30.117.2","Interface":"spr-gluetun","Policies":["wan","dns"],"Groups":["vpn-glutun"]}
 ```
 
 ### Routing devices through the tunnel
 
-Devices in the `vpn-egress` group share connectivity with the gluetun container.
+Devices in the `vpn-glutun` group share connectivity with the gluetun container.
 To send a device's internet traffic into the tunnel, route it via the gluetun
 container IP (`172.30.117.2`) with a custom interface rule / policy routing entry,
 e.g.:
 
 ```
 PUT /firewall/custom_interface
-{"SrcIP":"<device ip>","Interface":"spr-gluetun","RouteDst":"172.30.117.2","Groups":["vpn-egress"]}
+{"SrcIP":"<device ip>","Interface":"spr-gluetun","RouteDst":"172.30.117.2","Groups":["vpn-glutun"]}
 ```
 
 Set **Firewall outbound subnets** in the plugin UI to your SPR LAN subnet (e.g.
