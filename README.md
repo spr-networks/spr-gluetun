@@ -39,6 +39,8 @@ API key.
   server
 - Tunnel start / stop / restart from the UI (no docker access needed: uses gluetun's
   control server `PUT /v1/vpn/status`)
+- Contributes to SPR's network topology view (`GET /topology`): the gluetun gateway
+  container and, while the tunnel is up, the VPN exit ("City, Country" + public IP)
 - Hardened gluetun defaults, always enforced: `FIREWALL=on` (killswitch), `DOT=on`
   by default, HTTP proxy and Shadowsocks off, control server never published
 - Secrets are write-only through the API and stored 0600
@@ -95,6 +97,15 @@ at `/plugins/spr-gluetun/...`.
 | PUT    | `/vpn`       | `{"Status":"running"}` or `{"Status":"stopped"}` — start/stop the tunnel |
 | POST   | `/restart`   | Bounce the tunnel (stop then start) inside the running container         |
 | GET    | `/providers` | Static curated list of gluetun-supported providers                       |
+| GET    | `/topology`  | Plugin subgraph (`{Nodes, Edges}`) for SPR's topology view               |
+
+`GET /topology` (advertised via `"HasTopology": true` in `plugin.json`) lets SPR
+merge the plugin into the router topology view. It returns a root anchor node
+(`ConnType` = the configured VPN type), a `gateway` node for the gluetun container
+(`172.30.117.2`, `Online` = control server reachable) and — only while the tunnel
+is running — a `vpn-exit` node named "City, Country" with the tunnel's public IP,
+connected `root → gateway → exit` on the `vpn` layer. Only honest live data is
+emitted: with the tunnel down the graph is just root + gateway.
 
 `POST /restart` and `PUT /vpn` act on the tunnel *inside* the running gluetun
 container. Changes to provider/credentials (`gluetun.env`) are only read when the

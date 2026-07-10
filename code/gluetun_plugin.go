@@ -16,6 +16,7 @@ type StatusResponse struct {
 	Configured       bool
 	ControlReachable bool
 	VPNStatus        string // running | stopped | unknown
+	GatewayIP        string // fixed gluetun container IP devices are routed to
 	PublicIP         string `json:",omitempty"`
 	Region           string `json:",omitempty"`
 	Country          string `json:",omitempty"`
@@ -38,6 +39,7 @@ func handleGetStatus(w http.ResponseWriter, r *http.Request) {
 	response := StatusResponse{
 		Configured: configured,
 		VPNStatus:  "unknown",
+		GatewayIP:  GluetunContainerIP,
 	}
 
 	if status, err := getVPNStatus(); err == nil {
@@ -207,6 +209,7 @@ func main() {
 	mux.HandleFunc("PUT /vpn", handlePutVPN)
 	mux.HandleFunc("POST /restart", handleRestart)
 	mux.HandleFunc("GET /providers", handleGetProviders)
+	mux.HandleFunc("GET /topology", handleGetTopology)
 
 	// serve the bundled UI for everything else
 	mux.Handle("/", spaHandler{staticPath: "/ui", indexPath: "index.html"})
