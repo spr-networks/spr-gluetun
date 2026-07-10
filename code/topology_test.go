@@ -59,6 +59,23 @@ func TestBuildTopologyTunnelRunning(t *testing.T) {
 	}
 }
 
+func TestBuildTopologySink(t *testing.T) {
+	topo := buildTopology(topologyData{ControlReachable: true, TunnelRunning: true})
+	if len(topo.Sinks) != 1 {
+		t.Fatalf("expected 1 sink, got %+v", topo.Sinks)
+	}
+	sink := topo.Sinks[0]
+	if sink.ID != "gluetun" || sink.Iface != GluetunBridgeInterface ||
+		sink.IP != GluetunContainerIP || !sink.Online {
+		t.Errorf("bad sink advertisement: %+v", sink)
+	}
+
+	down := buildTopology(topologyData{ControlReachable: true, TunnelRunning: false})
+	if len(down.Sinks) != 1 || down.Sinks[0].Online {
+		t.Errorf("sink should be advertised but offline when tunnel is down: %+v", down.Sinks)
+	}
+}
+
 func TestBuildTopologyTunnelStopped(t *testing.T) {
 	topo := buildTopology(topologyData{
 		VPNType:          "wireguard",

@@ -7,6 +7,10 @@ import "net/http"
 // devices in the vpn-glutun group are routed to this IP.
 var GluetunContainerIP = "172.30.117.2"
 
+// GluetunBridgeInterface is the host-side docker bridge name (must match
+// docker-compose.yml driver_opts and plugin.json NetworkCapabilities).
+var GluetunBridgeInterface = "spr-gluetun"
+
 // TopoNode / TopoEdge / Topology mirror the shapes SPR expects from plugin
 // topology endpoints (same contract as spr-tailscale). The SPR host merges
 // the plugin graph into the router topology at the "root" anchor node.
@@ -29,6 +33,17 @@ type TopoEdge struct {
 type Topology struct {
 	Nodes []TopoNode
 	Edges []TopoEdge
+	Sinks []TopoSink `json:",omitempty"`
+}
+
+// TopoSink advertises a routeable egress: SPR can send a device's outbound
+// traffic out Iface (via IP) with a pfw forwarding rule.
+type TopoSink struct {
+	ID     string
+	Name   string
+	Iface  string
+	IP     string `json:",omitempty"`
+	Online bool
 }
 
 // topologyData is the live state the graph builder consumes, separated from
@@ -70,6 +85,13 @@ func buildTopology(d topologyData) Topology {
 	topo := Topology{
 		Nodes: []TopoNode{{ID: "root", ConnType: connType, Online: true}},
 		Edges: []TopoEdge{},
+		Sinks: []TopoSink{{
+			ID:     "gluetun",
+			Name:   "Gluetun VPN",
+			Iface:  GluetunBridgeInterface,
+			IP:     GluetunContainerIP,
+			Online: d.TunnelRunning,
+		}},
 	}
 
 	topo.Nodes = append(topo.Nodes, TopoNode{
