@@ -1,5 +1,7 @@
 # spr-gluetun
 
+<img width="850" alt="spr-gluetun UI preview" src="docs/screenshot.png" />
+
 An outbound VPN egress gateway plugin for [SPR](https://github.com/spr-networks/super),
 built around [gluetun](https://github.com/qdm12/gluetun) — the swiss-army VPN client
 container with a built-in killswitch firewall and DNS-over-TLS.
