@@ -58,6 +58,7 @@ services:
 # Interface used in install.sh's PUT /firewall/custom_interface.
 networks:
   gluetunnet:
+    name: spr-gluetun
     driver_opts:
       com.docker.network.bridge.name: spr-gluetun
     ipam:

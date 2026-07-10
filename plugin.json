@@ -4,6 +4,7 @@
   "UnixPath": "/state/plugins/spr-gluetun/socket",
   "URI": "spr-gluetun",
   "HasUI": true,
+  "Icon": "EarthLock",
   "SandboxedUI": false,
   "InstallTokenPath": "/configs/plugins/spr-gluetun/api-token",
   "NetworkCapabilities": {
