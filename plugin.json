@@ -1,6 +1,6 @@
 {
   "Name": "spr-gluetun",
-  "ComposeFilePath": "plugins/user/spr-gluetun/docker-compose.yml",
+  "ComposeFilePath": "plugins/user/spr-gluetun/docker-compose-krun.yml",
   "UnixPath": "/state/plugins/spr-gluetun/socket",
   "URI": "spr-gluetun",
   "HasUI": true,
@@ -9,7 +9,8 @@
   "SandboxedUI": false,
   "InstallTokenPath": "/configs/plugins/spr-gluetun/api-token",
   "NetworkCapabilities": {
-    "Interface": "spr-gluetun",
+    "Interface": "kgluetun0",
+    "DeviceMAC": "02:53:50:52:4b:06",
     "Policies": ["wan", "dns"],
     "Groups": ["vpn-glutun"]
   },

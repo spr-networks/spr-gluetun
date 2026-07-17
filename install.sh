@@ -41,8 +41,20 @@ if [ ! -f "$CONFIG_DIR/config.json" ]; then
   chmod 600 "$CONFIG_DIR/config.json"
 fi
 
-docker compose build
-docker compose up -d
+# The control/UI backend runs in krun and needs its own SPR DHCP identity.
+# The gluetun gateway remains on the Docker bridge because it is the
+# forwarding destination for the vpn-glutun group.
+KRUN_MAC="02:53:50:52:4b:06"
+KRUN_TAP="kgluetun0"
+curl --fail-with-body --silent --show-error "http://127.0.0.1/device?identity=${KRUN_MAC}" \
+  -H "Authorization: Bearer ${SPR_API_TOKEN}" -H "Content-Type: application/json" \
+  -X PUT --data-raw "{\"MAC\":\"${KRUN_MAC}\",\"Name\":\"spr-gluetun-control\",\"Policies\":[\"wan\",\"dns\"],\"Groups\":[]}" >/dev/null
+if ! sudo nft get element inet filter dhcp_access "{ \"${KRUN_TAP}\" . ${KRUN_MAC} }" >/dev/null 2>&1; then
+  sudo nft add element inet filter dhcp_access "{ \"${KRUN_TAP}\" . ${KRUN_MAC} : accept }"
+fi
+
+docker compose -f docker-compose-krun.yml build
+docker compose -f docker-compose-krun.yml up -d
 
 # Register the gluetun container IP as a custom interface so SPR grants it
 # wan+dns egress and puts it in the vpn-glutun group. Devices placed in the

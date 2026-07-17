@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var UNIX_PLUGIN_LISTENER = "/state/plugins/spr-gluetun/socket"
+var UNIX_PLUGIN_LISTENER = "/run/spr-krun-plugin/spr-gluetun.sock"
 
 type StatusResponse struct {
 	Configured       bool
