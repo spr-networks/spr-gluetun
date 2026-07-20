@@ -53,8 +53,8 @@ if ! sudo nft get element inet filter dhcp_access "{ \"${KRUN_TAP}\" . ${KRUN_MA
   sudo nft add element inet filter dhcp_access "{ \"${KRUN_TAP}\" . ${KRUN_MAC} : accept }"
 fi
 
-docker compose -f docker-compose-krun.yml build
-docker compose -f docker-compose-krun.yml up -d
+docker compose -f docker-compose-kvm.yml build
+docker compose -f docker-compose-kvm.yml up -d
 
 # Register the gluetun container IP as a custom interface so SPR grants it
 # wan+dns egress and puts it in the vpn-glutun group. Devices placed in the
