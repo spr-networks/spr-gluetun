@@ -1,15 +1,41 @@
 package main
 
-import "net/http"
+import (
+	"net"
+	"net/http"
+)
 
-// GluetunContainerIP is the fixed address of the gluetun container on the
-// plugin's docker bridge (see the ipam config in docker-compose.yml). SPR
-// devices in the vpn-glutun group are routed to this IP.
 var GluetunContainerIP = "172.30.117.2"
 
 // GluetunBridgeInterface is the host-side docker bridge name (must match
 // docker-compose.yml driver_opts and plugin.json NetworkCapabilities).
 var GluetunBridgeInterface = "spr-gluetun"
+
+func containerIPv4() string {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return ""
+	}
+	for _, iface := range ifaces {
+		if iface.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		addrs, err := iface.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, addr := range addrs {
+			ipnet, ok := addr.(*net.IPNet)
+			if !ok {
+				continue
+			}
+			if ip4 := ipnet.IP.To4(); ip4 != nil {
+				return ip4.String()
+			}
+		}
+	}
+	return ""
+}
 
 // TopoNode / TopoEdge / Topology mirror the shapes SPR expects from plugin
 // topology endpoints (same contract as spr-tailscale). The SPR host merges
