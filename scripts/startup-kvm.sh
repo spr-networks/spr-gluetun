@@ -8,6 +8,8 @@ if [ -f /configs/spr-gluetun/config.sh ]; then
 fi
 set +a
 
+sysctl -q -w net.ipv4.ip_forward=1
+
 if [ -z "${SPR_KRUN_VSOCK_PORT:-}" ] || [ -z "${SPR_KRUN_PLUGIN_SOCKET:-}" ]; then
     echo "SPR_KRUN_VSOCK_PORT and SPR_KRUN_PLUGIN_SOCKET must be set" >&2
     exit 64
