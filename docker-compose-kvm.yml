@@ -5,6 +5,8 @@ services:
       service: spr-gluetun
     image: ghcr.io/spr-networks/spr-gluetun:${RELEASE_VERSION:-latest}${RELEASE_CHANNEL:--krun}
     runtime: ${SPR_KRUN_RUNTIME:-spr-krun}
+    healthcheck:
+      disable: true
     annotations:
       krun.cpus: "${SPR_KRUN_CPUS:-1}"
       krun.ram_mib: "${SPR_KRUN_RAM_MIB:-128}"

@@ -52,4 +52,5 @@ COPY --from=builder /spr_gluetun_plugin /spr_gluetun_plugin
 COPY --from=builder-ui /app/build/ /ui/
 RUN chmod 0755 /scripts/startup-kvm.sh /usr/local/bin/spr-krun-vsock-proxy /spr_gluetun_plugin
 
+HEALTHCHECK NONE
 ENTRYPOINT ["/scripts/startup-kvm.sh"]
