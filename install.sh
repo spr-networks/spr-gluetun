@@ -45,12 +45,12 @@ fi
 # The gluetun gateway remains on the Docker bridge because it is the
 # forwarding destination for the vpn-glutun group.
 KRUN_MAC="02:53:50:52:4b:06"
-KRUN_TAP="kgluetun0"
+PLUGIN_INTERFACE="spr-gluetun"
 curl --fail-with-body --silent --show-error "http://127.0.0.1/device?identity=${KRUN_MAC}" \
   -H "Authorization: Bearer ${SPR_API_TOKEN}" -H "Content-Type: application/json" \
   -X PUT --data-raw "{\"MAC\":\"${KRUN_MAC}\",\"Name\":\"spr-gluetun-control\",\"Policies\":[\"wan\",\"dns\"],\"Groups\":[]}" >/dev/null
-if ! sudo nft get element inet filter dhcp_access "{ \"${KRUN_TAP}\" . ${KRUN_MAC} }" >/dev/null 2>&1; then
-  sudo nft add element inet filter dhcp_access "{ \"${KRUN_TAP}\" . ${KRUN_MAC} : accept }"
+if ! sudo nft get element inet filter dhcp_access "{ \"${PLUGIN_INTERFACE}\" . ${KRUN_MAC} }" >/dev/null 2>&1; then
+  sudo nft add element inet filter dhcp_access "{ \"${PLUGIN_INTERFACE}\" . ${KRUN_MAC} : accept }"
 fi
 
 docker compose -f docker-compose-kvm.yml build

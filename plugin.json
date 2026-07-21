@@ -9,7 +9,7 @@
   "SandboxedUI": false,
   "InstallTokenPath": "/configs/plugins/spr-gluetun/api-token",
   "NetworkCapabilities": {
-    "Interface": "kgluetun0",
+    "Interface": "spr-gluetun",
     "DeviceMAC": "02:53:50:52:4b:06",
     "Policies": ["wan", "dns"],
     "Groups": ["vpn-glutun"]
