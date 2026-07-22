@@ -10,13 +10,13 @@ import (
 	"time"
 )
 
-var UNIX_PLUGIN_LISTENER = "/state/plugins/spr-gluetun/socket"
+var UNIX_PLUGIN_LISTENER = "/run/spr-krun-plugin/spr-gluetun.sock"
 
 type StatusResponse struct {
 	Configured       bool
 	ControlReachable bool
-	VPNStatus        string // running | stopped | unknown
-	GatewayIP        string // fixed gluetun container IP devices are routed to
+	VPNStatus        string
+	GatewayIP        string
 	PublicIP         string `json:",omitempty"`
 	Region           string `json:",omitempty"`
 	Country          string `json:",omitempty"`
@@ -192,6 +192,8 @@ func logRequest(handler http.Handler) http.Handler {
 }
 
 func main() {
+	GluetunContainerIP = containerIPv4()
+
 	if err := loadConfig(); err != nil {
 		fmt.Println("failed to load config:", err)
 	}

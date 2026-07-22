@@ -1,0 +1,42 @@
+services:
+  spr-gluetun:
+    extends:
+      file: docker-compose.yml
+      service: spr-gluetun
+    image: ghcr.io/spr-networks/spr-gluetun:${RELEASE_VERSION:-latest}${RELEASE_CHANNEL:--krun}
+    runtime: ${SPR_KRUN_RUNTIME:-spr-krun}
+    healthcheck:
+      disable: true
+    annotations:
+      krun.cpus: "${SPR_KRUN_CPUS:-1}"
+      krun.ram_mib: "${SPR_KRUN_RAM_MIB:-128}"
+      krun.tap_name: "kruntap0"
+      krun.net_uplink: "eth0"
+      krun.net_mac: "${SPR_KRUN_MAC:-02:53:50:52:4b:06}"
+      krun.vsock_path: "/state/plugins/spr-gluetun/socket"
+      krun.vsock_port: "4040"
+    environment:
+      SPR_KRUN_PLUGIN_SOCKET: "/run/spr-krun-plugin/spr-gluetun.sock"
+      SPR_KRUN_VSOCK_PORT: "4040"
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_forward: "1"
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    volumes:
+      - "${SUPERDIR}./state/plugins/spr-gluetun:/state/plugins/spr-gluetun"
+      - "${SUPERDIR}./state/public/:/state/public/"
+      - "${SUPERDIR}./state/api/:/state/api/"
+      - "${SUPERDIR}./configs/base/config.sh:/configs/base/config.sh"
+      - "${SUPERDIR}./configs/plugins/spr-gluetun:/configs/spr-gluetun"
+      - "${SUPERDIR}./state/plugins/spr-gluetun/gluetun:/gluetun"
+
+networks:
+  gluetunnet:
+    name: spr-gluetun
+    driver_opts:
+      com.docker.network.bridge.name: spr-gluetun
+    ipam:
+      config:
+        - subnet: 172.30.117.0/24

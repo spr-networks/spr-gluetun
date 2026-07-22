@@ -3,6 +3,8 @@ ARG ALPINE_REF=alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a
 ARG UBUNTU_REF=ubuntu:24.04@sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90
 ARG NODE_REF=node:18@sha256:c6ae79e38498325db67193d391e6ec1d224d96c693a8a4d943498556716d3783
 ARG CONTAINER_TEMPLATE_REF=ghcr.io/spr-networks/container_template@sha256:869ada7b121e9a0c552674042d32e801da3c4d04145638d9e722918c6377e65f
+ARG SPR_KRUN_PLUGIN_REF=ghcr.io/spr-networks/spr-krun-plugin:latest
+ARG GLUETUN_REF=qmcgaw/gluetun:v3.41.1@sha256:1a5bf4b4820a879cdf8d93d7ef0d2d963af56670c9ebff8981860b6804ebc8ab
 ARG SOURCE_DATE_EPOCH
 
 FROM ${ALPINE_REF} AS cacerts
@@ -32,7 +34,7 @@ RUN set -eux; \
 ENV PATH="/usr/local/go/bin:${PATH}" GOTOOLCHAIN=local
 WORKDIR /code
 COPY code/ /code/
-RUN --mount=type=tmpfs,target=/root/go/ go build -trimpath -ldflags "-s -w" -o /spr_gluetun_plugin /code/
+RUN --mount=type=tmpfs,target=/root/go/ go test ./... && go build -trimpath -ldflags "-s -w" -o /spr_gluetun_plugin /code/
 
 FROM ${NODE_REF} AS builder-ui
 WORKDIR /app
@@ -41,10 +43,14 @@ RUN --mount=type=tmpfs,target=/root/.cache \
     --mount=type=tmpfs,target=/app/node_modules \
     yarn install --frozen-lockfile --network-timeout 86400000 && yarn run bundle
 
-FROM ${CONTAINER_TEMPLATE_REF}
-ENV DEBIAN_FRONTEND=noninteractive
+FROM ${SPR_KRUN_PLUGIN_REF} AS krun
+
+FROM ${GLUETUN_REF}
 COPY scripts /scripts/
+COPY --from=krun /usr/local/bin/spr-krun-vsock-proxy /usr/local/bin/
 COPY --from=builder /spr_gluetun_plugin /spr_gluetun_plugin
 COPY --from=builder-ui /app/build/ /ui/
+RUN chmod 0755 /scripts/startup-kvm.sh /usr/local/bin/spr-krun-vsock-proxy /spr_gluetun_plugin
 
-ENTRYPOINT ["/scripts/startup.sh"]
+HEALTHCHECK NONE
+ENTRYPOINT ["/scripts/startup-kvm.sh"]

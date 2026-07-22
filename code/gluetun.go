@@ -8,9 +8,7 @@ import (
 	"time"
 )
 
-// gluetun's control server, reachable only on the plugin's own docker bridge
-// ("gluetun" is the compose service name). Never published on the host.
-var GluetunControlURL = "http://gluetun:8000"
+var GluetunControlURL = "http://127.0.0.1:8000"
 
 var gluetunHTTP = &http.Client{Timeout: 5 * time.Second}
 
