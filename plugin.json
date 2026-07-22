@@ -6,7 +6,7 @@
   "HasUI": true,
   "HasTopology": true,
   "Icon": "EarthLock",
-  "SandboxedUI": false,
+  "SandboxedUI": true,
   "NetworkCapabilities": {
     "Interface": "spr-gluetun",
     "DeviceMAC": "02:53:50:52:4b:06",
