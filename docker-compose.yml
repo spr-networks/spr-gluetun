@@ -38,7 +38,7 @@ services:
   # SPR plugin backend + UI (unix socket only, no capabilities)
   spr-gluetun:
     container_name: spr-gluetun
-    image: ghcr.io/spr-networks/spr-gluetun:${RELEASE_VERSION:-latest}${RELEASE_CHANNEL:-}
+    image: ghcr.io/spr-networks/spr-gluetun:latest
     build:
       context: "${BUILDCTX:-.}"
       labels: *default-labels
