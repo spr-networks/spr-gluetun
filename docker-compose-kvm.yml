@@ -41,3 +41,4 @@ networks:
     name: spr-gluetun
     driver_opts:
       com.docker.network.bridge.name: spr-gluetun
+      com.docker.network.bridge.inhibit_ipv4: "true"
