@@ -25,7 +25,6 @@ services:
       - net.ipv4.ip_forward=1
     networks:
       gluetunnet:
-        ipv4_address: 172.30.117.2
     # written by the spr-gluetun backend from the validated JSON config;
     # missing until first configuration (gluetun then exits until configured)
     env_file:
@@ -46,7 +45,6 @@ services:
       - no-new-privileges:true
     networks:
       gluetunnet:
-        ipv4_address: 172.30.117.3
     volumes:
       - "${SUPERDIR}./state/plugins/spr-gluetun:/state/plugins/spr-gluetun"
       - "${SUPERDIR}./state/public/:/state/public/:ro"
@@ -54,13 +52,9 @@ services:
       - "${SUPERDIR}./configs/base/config.sh:/configs/base/config.sh:ro"
       - "${SUPERDIR}./configs/plugins/spr-gluetun:/configs/spr-gluetun"
 
-# The bridge name must match plugin.json NetworkCapabilities.Interface and the
-# Interface used in install.sh's PUT /firewall/custom_interface.
+# The bridge name must match NetworkCapabilities.Interface in plugin.json.
 networks:
   gluetunnet:
     name: spr-gluetun
     driver_opts:
       com.docker.network.bridge.name: spr-gluetun
-    ipam:
-      config:
-        - subnet: 172.30.117.0/24

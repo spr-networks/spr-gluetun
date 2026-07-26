@@ -10,6 +10,7 @@
   "NetworkCapabilities": {
     "Interface": "spr-gluetun",
     "DeviceMAC": "02:53:50:52:4b:06",
+    "ContainerName": "spr-gluetun-vpn",
     "Policies": ["wan", "dns"],
     "Groups": ["vpn-glutun"]
   },

@@ -4,6 +4,7 @@ services:
       file: docker-compose.yml
       service: spr-gluetun
     image: ghcr.io/spr-networks/spr-gluetun:latest
+    build: !reset null
     runtime: ${SPR_KRUN_RUNTIME:-spr-krun}
     healthcheck:
       disable: true
@@ -40,6 +41,3 @@ networks:
     name: spr-gluetun
     driver_opts:
       com.docker.network.bridge.name: spr-gluetun
-    ipam:
-      config:
-        - subnet: 172.30.117.0/24

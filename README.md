@@ -48,16 +48,9 @@ API key.
 3. Enable the plugin, open its UI, configure a provider and save
 4. Put the devices you want tunneled into the `vpn-glutun` group (Devices page)
 
-## Install (CLI)
-
-```bash
-./install.sh
-```
-
-Prompts for your SPR directory (default `/home/spr/super/`) and an SPR API token.
-On current SPR builds, installing through the Plugins UI is preferred because
-Superd selects `docker-compose-kvm.yml` from the manifest's `Runtime: kvm` entry
-and prepares DHCP authorization before starting the guest.
+The Plugins UI is the supported installation path. Superd selects
+`docker-compose-kvm.yml` from the manifest's `Runtime: kvm` entry and prepares
+DHCP authorization before starting the guest.
 
 ### Routing devices through the tunnel
 
