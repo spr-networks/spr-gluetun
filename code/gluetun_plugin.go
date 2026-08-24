@@ -10,7 +10,14 @@ import (
 	"time"
 )
 
-var UNIX_PLUGIN_LISTENER = "/run/spr-krun-plugin/spr-gluetun.sock"
+var UNIX_PLUGIN_LISTENER = "/state/plugins/spr-gluetun/socket.sock"
+
+func pluginSocketPath() string {
+	if path := os.Getenv("SPR_KRUN_PLUGIN_SOCKET"); path != "" {
+		return path
+	}
+	return UNIX_PLUGIN_LISTENER
+}
 
 type StatusResponse struct {
 	Configured       bool
@@ -216,12 +223,16 @@ func main() {
 	// serve the bundled UI for everything else
 	mux.Handle("/", spaHandler{staticPath: "/ui", indexPath: "index.html"})
 
-	os.Remove(UNIX_PLUGIN_LISTENER)
-	listener, err := net.Listen("unix", UNIX_PLUGIN_LISTENER)
+	socketPath := pluginSocketPath()
+	os.Remove(socketPath)
+	if err := os.MkdirAll(filepath.Dir(socketPath), 0755); err != nil {
+		panic(err)
+	}
+	listener, err := net.Listen("unix", socketPath)
 	if err != nil {
 		panic(err)
 	}
-	if err := os.Chmod(UNIX_PLUGIN_LISTENER, 0770); err != nil {
+	if err := os.Chmod(socketPath, 0770); err != nil {
 		panic(err)
 	}
 
